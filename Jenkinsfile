@@ -1,33 +1,26 @@
 pipeline {
-  agent any
-  stages {
-    stage('Build') {
-      steps {
-        sh 'mvn clean install'  // Assuming mvn is a typo for your actual build command
-      }
-      echo 'Build stage successful'
-    }
-    stage('Test') {
-      steps {
-        sh 'mvn test'  // Assuming mvn is a typo for your actual test command
-      }
-      echo 'Test stage successful'
-      post {
-        always {
-          junit 'target/surefire-reports/*.xml'
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                build 'PES1UG21CS338-1'
+                sh 'g++ sample.cpp -o output'
+            }
         }
-      }
+        stage('Test') {
+            steps {
+                sh './output'
+            }
+        }
+        stage('Deploy') {
+            step {
+                echo 'deploy'
+            }
+        }
     }
-    stage('Deploy') {
-      steps {
-        sh 'mvn deploy'  // Assuming mvn is a typo for your actual deployment command
-      }
-      echo 'Deployment Successful'
+    post{
+        failure{
+            error 'Pipeline failed'
+        }
     }
-  }
-  post {
-    failure {
-      echo 'Pipeline failed'
-    }
-  }
 }
